@@ -1,0 +1,31 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: "0.0.0.0:4317"
+  hostmetrics:
+    scrapers:
+      load:
+      cpu:
+      disk:
+      filesystem:
+      memory:
+      network:
+      paging:
+      process:
+
+processors:
+  batch:
+    timeout: 10s
+
+exporters:
+  datadog:
+    api:
+      key: "<API KEY>"
+      
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [datadog]
