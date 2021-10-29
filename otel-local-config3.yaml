@@ -2,7 +2,7 @@ receivers:
   otlp:
     protocols:
       grpc:
-        endpoint: "127.0.0.1:4317"
+        endpoint: "0.0.0.0:4317"
   hostmetrics:
     scrapers:
       load:
@@ -18,14 +18,26 @@ processors:
   batch:
     timeout: 10s
 
+extensions:
+  health_check: {}
+
 exporters:
+  jaeger:
+    endpoint: "127.0.0.1:14250"
+    insecure: true
   datadog:
     api:
       key: "b7b38d320339064689dc55f5115d2a8e"
-      
+  logging:
+  
 service:
+  extensions: [health_check]
   pipelines:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [datadog]
+      exporters: [jaeger,datadog]
+    metrics:
+      receivers: [otlp]
+      processors: []
+      exporters: [logging]
